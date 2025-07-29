@@ -1,4 +1,4 @@
-![Blazor.FluentValidation Logo](https://raw.githubusercontent.com/ganiputras/Blazor.FluentValidation/master/logo.png)
+![Blazor.FluentValidation](https://raw.githubusercontent.com/ganiputras/Blazor.FluentValidation/refs/heads/master/logo.png)
 
 # Blazor.FluentValidation
 
