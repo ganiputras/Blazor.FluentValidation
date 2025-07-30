@@ -1,0 +1,51 @@
+﻿@page "/person-form-type"
+@using BlazorApp.Components.Models
+@using BlazorApp.Components.Validators
+
+<EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit" FormName="personForm">
+    <FluentValidationExtension ValidatorType="typeof(PersonValidator)"  />
+
+    <h3>Formulir Data Diri</h3>
+
+    <div class="mb-3">
+        <label>Nama:</label>
+        <InputText @bind-Value="Model.Name" class="form-control" />
+        <ValidationMessage For="@(() => Model.Name)" />
+    </div>
+
+    <h4>Alamat</h4>
+
+    <div class="mb-3">
+        <label>Jalan:</label>
+        <InputText @bind-Value="Model.Address.Street" class="form-control" />
+        <ValidationMessage For="@(() => Model.Address.Street)" />
+    </div>
+
+    <div class="mb-3">
+        <label>Kota:</label>
+        <InputText @bind-Value="Model.Address.City" class="form-control" />
+        <ValidationMessage For="@(() => Model.Address.City)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Simpan</button>
+</EditForm>
+
+@if (_submitted)
+{
+    <div class="alert alert-success mt-3">
+        Data berhasil dikirim!
+    </div>
+}
+
+
+@code {
+
+    [SupplyParameterFromForm]
+    private Person Model { get; set; } = new();
+    private bool _submitted = false;
+
+    private void HandleValidSubmit()
+    {
+        _submitted = true;
+    }
+}

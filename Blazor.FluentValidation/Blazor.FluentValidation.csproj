@@ -1,19 +1,60 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
 
+		<!-- Razor library -->
+		<RazorLangVersion>8.0</RazorLangVersion>
+		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
+		<!-- NuGet Metadata -->
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>Blazor.FluentValidation</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Gani Putras</Authors>
+		<Company>Ganiputras</Company>
+		<Product>Blazor.FluentValidation</Product>
+		<Description>Integrasi otomatis FluentValidation dengan EditForm di Blazor.</Description>
+		<Copyright>Copyright © 2025</Copyright>
+		<PackageTags>blazor;fluentvalidation;form;validation;components</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/ganiputras/Blazor.FluentValidation</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/ganiputras/Blazor.FluentValidation</PackageProjectUrl>
+		<PackageIcon>logo.png</PackageIcon>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.18" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
-  </ItemGroup>
+		<PackageReleaseNotes>
+			<![CDATA[
+Blazor.FluentValidation v1.0.0
+
+✅ Fitur:
+- Integrasi otomatis FluentValidation dalam Blazor `EditForm`.
+- Mendukung penggunaan `ValidatorType` dari DI dan `ValidatorInstance` secara manual.
+- Kompatibel dengan validasi built-in Blazor.
+- Dukungan validasi real-time melalui `OnFieldChanged`.
+
+📚 Dokumentasi:
+🔗 https://github.com/ganiputras/Blazor.FluentValidation
+      ]]>
+		</PackageReleaseNotes>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.18" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- File aset tambahan -->
+		<None Include="package\logo.png" Pack="true" PackagePath="" />
+		<None Include="package\readme.md" Pack="true" PackagePath="" />
+		<None Include="package\license.txt" Pack="true" PackagePath="" />
+	</ItemGroup>
 
 </Project>
