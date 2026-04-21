@@ -3,7 +3,7 @@
 # Blazor.FluentValidation
 
 Integrasi otomatis [FluentValidation](https://docs.fluentvalidation.net) ke dalam `<EditForm>` Blazor.  
-Kompatibel dengan .NET 8+, mendukung nested object, collection, rule set, dan validasi real-time per field.
+Kompatibel dengan .NET 10+, mendukung nested object, collection, rule set, dan validasi real-time per field.
 
 [![NuGet](https://img.shields.io/nuget/v/Blazor.FluentValidation.svg?style=flat-square)](https://www.nuget.org/packages/Blazor.FluentValidation)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://licenses.nuget.org/MIT)

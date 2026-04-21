@@ -9,6 +9,13 @@
 		<RazorLangVersion>10.0</RazorLangVersion>
 		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 
+		<!-- Build quality -->
+		<Deterministic>true</Deterministic>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
 		<!-- NuGet Metadata -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Blazor.FluentValidation</PackageId>
@@ -20,6 +27,7 @@
 		<Copyright>Copyright © 2026</Copyright>
 		<PackageTags>blazor;fluentvalidation;form;validation;components</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/ganiputras/Blazor.FluentValidation</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/ganiputras/Blazor.FluentValidation</PackageProjectUrl>
 		<PackageIcon>logo.png</PackageIcon>
@@ -27,7 +35,7 @@
 
 		<PackageReleaseNotes>
 			<![CDATA[
-Blazor.FluentValidation v1.0.0
+Blazor.FluentValidation v1.0.1
 
 ✅ Fitur:
 - Integrasi otomatis FluentValidation dalam Blazor `EditForm`.
@@ -48,6 +56,7 @@ Blazor.FluentValidation v1.0.0
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>

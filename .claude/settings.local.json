@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dotnet build *)"
+      "Bash(dotnet build *)",
+      "Bash(grep -E \"\\\\.\\(json|yml|yaml|md|txt\\)$|^d\")"
     ]
   }
 }
