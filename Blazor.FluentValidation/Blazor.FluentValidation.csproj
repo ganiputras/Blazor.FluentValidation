@@ -19,7 +19,7 @@
 		<!-- NuGet Metadata -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Blazor.FluentValidation</PackageId>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<Authors>Gani Putras</Authors>
 		<Company>Ganiputras</Company>
 		<Product>Blazor.FluentValidation</Product>
