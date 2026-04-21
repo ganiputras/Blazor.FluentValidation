@@ -2,67 +2,135 @@
 
 # Blazor.FluentValidation
 
-🚀 Integrasi otomatis [FluentValidation](https://docs.fluentvalidation.net) ke dalam `<EditForm>` Blazor.  
-✨ Kompatibel dengan .NET 8+, mendukung nested validation, DI, dan validasi per field secara real-time!
+Integrasi otomatis [FluentValidation](https://docs.fluentvalidation.net) ke dalam `<EditForm>` Blazor.  
+Kompatibel dengan .NET 8+, mendukung nested object, collection, rule set, dan validasi real-time per field.
 
 [![NuGet](https://img.shields.io/nuget/v/Blazor.FluentValidation.svg?style=flat-square)](https://www.nuget.org/packages/Blazor.FluentValidation)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://licenses.nuget.org/MIT)
 
 ---
 
-## 🧩 Fitur Utama
+## Fitur Utama
 
-- 🔗 Integrasi langsung ke `<EditForm>` — tanpa konfigurasi kompleks
-- 💉 Support `ValidatorType` via Dependency Injection (DI)
-- 🛠️ Support `ValidatorInstance` tanpa DI (manual)
-- 🧠 Validasi properti nested seperti `Address.City` otomatis tampil
-- ⚡ Validasi real-time saat field diubah (`OnFieldChanged`)
-- 🔐 Kompatibel dengan `[SupplyParameterFromForm]` (.NET 8+ Interactive Rendering)
+- Integrasi langsung ke `<EditForm>` tanpa konfigurasi kompleks
+- **Auto-discovery validator** dari DI berdasarkan tipe model — tanpa perlu set parameter apapun
+- Support `ValidatorType` (resolve dari DI) dan `ValidatorInstance` (instance manual)
+- Validasi nested object otomatis (`Address.City`, `Order.Items[0].Name`)
+- Dukungan collection dengan indexer (`Items[0]`, `Tags[2]`)
+- Validasi real-time saat field berubah (`OnFieldChanged`)
+- Support **Rule Set** FluentValidation via parameter `RuleSets`
+- Opsi menonaktifkan validasi per field via `ValidateOnFieldChange`
+- Penanganan error yang aman — tidak merusak Blazor Server circuit
 
 ---
 
-## 📦 Instalasi
+## Instalasi
 
-```bash
+```shell
 dotnet add package Blazor.FluentValidation
 ```
 
+---
 
-## 🔧 Registrasi DI (jika pakai ValidatorType)
-```bash
+## Registrasi DI
+
+Daftarkan validator ke DI container di `Program.cs`:
+
+```csharp
 using FluentValidation;
+
+// Satu assembly
 builder.Services.AddValidatorsFromAssemblyContaining<PersonValidator>();
 
-// atau untuk banyak assembly
-var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+// Atau semua assembly yang ter-load
+var assemblies = AppDomain.CurrentDomain
+    .GetAssemblies()
+    .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location));
+
 builder.Services.AddValidatorsFromAssemblies(assemblies, includeInternalTypes: true);
 ```
-## ✅ Contoh Penggunaan
 
-🧷 Mode 1: ValidatorType (dari DI)
-```bash
-<EditForm Model="@person" OnValidSubmit="@HandleSubmit" FormName="formA">
+---
+
+## Parameter
+
+| Parameter | Tipe | Default | Keterangan |
+|---|---|---|---|
+| `ValidatorType` | `Type?` | `null` | Tipe validator yang di-resolve dari DI. Diabaikan jika `ValidatorInstance` diset. |
+| `ValidatorInstance` | `IValidator?` | `null` | Instance validator manual. Jika diset, `ValidatorType` diabaikan. |
+| `RuleSets` | `string[]?` | `null` | Rule set FluentValidation yang dieksekusi. `null` = semua rule dijalankan. |
+| `ValidateOnFieldChange` | `bool` | `true` | Jika `false`, validasi hanya dijalankan saat form disubmit. |
+
+---
+
+## Contoh Penggunaan
+
+### Mode 1: Auto-Discovery (Direkomendasikan)
+
+Jika `IValidator<TModel>` sudah terdaftar di DI, tidak perlu set parameter apapun:
+
+```razor
+<EditForm Model="@person" OnValidSubmit="@HandleSubmit">
+    <FluentValidationExtension />
+
+    <InputText @bind-Value="person.Name" />
+    <ValidationMessage For="@(() => person.Name)" />
+
+    <button type="submit">Simpan</button>
+</EditForm>
+```
+
+### Mode 2: ValidatorType (dari DI)
+
+```razor
+<EditForm Model="@person" OnValidSubmit="@HandleSubmit">
     <FluentValidationExtension ValidatorType="typeof(PersonValidator)" />
+
     <InputText @bind-Value="person.Name" />
     <ValidationMessage For="@(() => person.Name)" />
 </EditForm>
+```
 
- ```
-  
-✍️ Mode 2: ValidatorInstance (manual)
-```bash
-<EditForm Model="@person" OnValidSubmit="@HandleSubmit" FormName="formB">
-    <FluentValidationExtension ValidatorInstance="new PersonValidator()" />
+### Mode 3: ValidatorInstance (manual, tanpa DI)
+
+```razor
+<EditForm Model="@person" OnValidSubmit="@HandleSubmit">
+    <FluentValidationExtension ValidatorInstance="@(new PersonValidator())" />
+
     <InputText @bind-Value="person.Name" />
     <ValidationMessage For="@(() => person.Name)" />
 </EditForm>
+```
 
- ```
+### Mode 4: Rule Set
 
-👪 Contoh Nested Validation (Parent-Child)
+```razor
+<EditForm Model="@person" OnValidSubmit="@HandleSubmit">
+    <FluentValidationExtension RuleSets="@(new[] { "Create", "Default" })" />
 
-🔹 Model
-```bash
+    <InputText @bind-Value="person.Name" />
+    <ValidationMessage For="@(() => person.Name)" />
+</EditForm>
+```
+
+### Mode 5: Hanya Validasi saat Submit
+
+```razor
+<EditForm Model="@person" OnValidSubmit="@HandleSubmit">
+    <FluentValidationExtension ValidateOnFieldChange="false" />
+
+    <InputText @bind-Value="person.Name" />
+    <ValidationMessage For="@(() => person.Name)" />
+</EditForm>
+```
+
+---
+
+## Nested Object
+
+### Model
+
+```csharp
 public class Person
 {
     public string Name { get; set; } = string.Empty;
@@ -74,17 +142,21 @@ public class Address
     public string Street { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
 }
+```
 
- ```   
+### Validator
 
-🔹 Validator
-```bash
+```csharp
 public class PersonValidator : AbstractValidator<Person>
 {
     public PersonValidator()
     {
-        RuleFor(p => p.Name).NotEmpty().WithMessage("Nama wajib diisi.");
-        RuleFor(p => p.Address).SetValidator(new AddressValidator());
+        RuleFor(p => p.Name)
+            .NotEmpty().WithMessage("Nama wajib diisi.")
+            .MinimumLength(3).WithMessage("Minimal 3 karakter.");
+
+        RuleFor(p => p.Address)
+            .SetValidator(new AddressValidator());
     }
 }
 
@@ -96,13 +168,13 @@ public class AddressValidator : AbstractValidator<Address>
         RuleFor(a => a.City).NotEmpty().WithMessage("Kota wajib diisi.");
     }
 }
+```
 
- ```   
+### Form
 
-🔹 Razor Form
-```bash
-<EditForm Model="@person" OnValidSubmit="@HandleSubmit" FormName="nestedForm">
-    <FluentValidationExtension ValidatorType="typeof(PersonValidator)" />
+```razor
+<EditForm Model="@person" OnValidSubmit="@HandleSubmit">
+    <FluentValidationExtension />
 
     <InputText @bind-Value="person.Name" />
     <ValidationMessage For="@(() => person.Name)" />
@@ -112,28 +184,93 @@ public class AddressValidator : AbstractValidator<Address>
 
     <InputText @bind-Value="person.Address.City" />
     <ValidationMessage For="@(() => person.Address.City)" />
+
+    <button type="submit">Simpan</button>
 </EditForm>
+```
 
- ```   
+---
 
+## Collection
 
-⚠️ Penting untuk .NET 8+
+```csharp
+public class Order
+{
+    public List<OrderItem> Items { get; set; } = [];
+}
 
-Jika Anda menggunakan [SupplyParameterFromForm], pastikan menyertakan FormName:
-```bash
-<EditForm FormName="uniqueFormName" ... />
- ```   
-Tanpa FormName, Blazor akan menampilkan error seperti:
-```bash
+public class OrderItem
+{
+    public string ProductName { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+}
+
+public class OrderValidator : AbstractValidator<Order>
+{
+    public OrderValidator()
+    {
+        RuleForEach(o => o.Items).SetValidator(new OrderItemValidator());
+    }
+}
+
+public class OrderItemValidator : AbstractValidator<OrderItem>
+{
+    public OrderItemValidator()
+    {
+        RuleFor(i => i.ProductName).NotEmpty().WithMessage("Nama produk wajib diisi.");
+        RuleFor(i => i.Quantity).GreaterThan(0).WithMessage("Jumlah harus lebih dari 0.");
+    }
+}
+```
+
+```razor
+<EditForm Model="@order" OnValidSubmit="@HandleSubmit">
+    <FluentValidationExtension />
+
+    @for (int i = 0; i < order.Items.Count; i++)
+    {
+        var item = order.Items[i];
+
+        <InputText @bind-Value="item.ProductName" />
+        <ValidationMessage For="@(() => item.ProductName)" />
+
+        <InputNumber @bind-Value="item.Quantity" />
+        <ValidationMessage For="@(() => item.Quantity)" />
+    }
+
+    <button type="submit">Pesan</button>
+</EditForm>
+```
+
+---
+
+## Catatan untuk .NET 8+ (Static SSR)
+
+Jika menggunakan `[SupplyParameterFromForm]`, wajib menyertakan `FormName` yang unik:
+
+```razor
+<EditForm FormName="personForm" Model="@person" OnValidSubmit="@HandleSubmit">
+    <FluentValidationExtension />
+    ...
+</EditForm>
+```
+
+Tanpa `FormName`, Blazor akan melempar error:
+
+```
 The POST request does not specify which form is being submitted.
- ```   
+```
 
-## 💬 Kontribusi & Dukungan
+---
 
-Kontribusi terbuka!
-Silakan laporkan issue, ajukan fitur, atau buat pull request di:
+## Kontribusi & Dukungan
 
-🔗 https://github.com/ganiputras/Blazor.FluentValidation
+Kontribusi terbuka. Silakan laporkan issue, ajukan fitur, atau buat pull request di:
 
-## ⚖️ Lisensi
-Blazor.FluentValidation dirilis di bawah MIT License
+[https://github.com/ganiputras/Blazor.FluentValidation](https://github.com/ganiputras/Blazor.FluentValidation)
+
+---
+
+## Lisensi
+
+Blazor.FluentValidation dirilis di bawah [MIT License](https://licenses.nuget.org/MIT).
